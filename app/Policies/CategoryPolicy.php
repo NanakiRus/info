@@ -20,6 +20,7 @@ class CategoryPolicy
     public function before(User $user) : bool
     {
         $user = auth()->user();
+
         if (!$user->exists()) {
             return false;
         }
