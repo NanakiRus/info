@@ -35,4 +35,14 @@ class Category extends Model
     {
         return $this->hasMany(Post::class, 'category_id', 'id');
     }
+
+    /**
+     * У категории может быть много товаров.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id', 'id');
+    }
 }

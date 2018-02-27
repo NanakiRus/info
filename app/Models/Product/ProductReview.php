@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Review extends Model
+class ProductReview extends Model
 {
-    protected $table = 'reviews';
+    protected $table = 'product_reviews';
 
     protected $fillable = [
         'author',

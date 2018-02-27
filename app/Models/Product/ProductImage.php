@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Image extends Model
+class ProductImage extends Model
 {
-    protected $table = 'images';
+    protected $table = 'product_images';
 
     protected $fillable = [
         'name',
