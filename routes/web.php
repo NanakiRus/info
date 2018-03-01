@@ -25,6 +25,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::prefix('admin')->middleware('can:view,App\Models\Category')->group(function () {
 
     Route::get('/', 'Admin\AdminController@index')->name('admin');
-    Route::get('category', 'CategoryController@index')->name('category');
-
+//    Route::get('category', 'CategoryController@index')->name('category');
+    Route::resource('category', 'CategoryController');
 });

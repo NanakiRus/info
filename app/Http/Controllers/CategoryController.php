@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
         $categories = Category::paginate(10);
 
-        return view('admin.category.index', [
+        return view('admin/category/index', [
             'categories' => $categories
         ]);
     }
@@ -28,7 +28,13 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::with('recursiveSubcategory')->whereNull('parent_id')->get();
+
+        $categories = explode(' ', trim(nestedToString($categories, '-')));
+
+        return view('/admin/category/create', [
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -39,7 +45,23 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->validate([
+            'title' => 'alpha_dash|max:100',
+            'name' => 'required|alpha_dash|max:100',
+            'slug' => 'required|alpha_dash|max:255|unique:categories',
+            'text' => '',
+            'parent_id' => ''
+        ]);
+
+        if (!empty($input['parent_id'])) {
+            $input['parent_id'] = Category::where('name', str_replace('-', '', $input['parent_id']))
+                ->firstOrFail()
+                ->id;
+        }
+
+        Category::create($input);
+
+        return back()->with('success', 'Создано');
     }
 
     /**

@@ -17,13 +17,33 @@ class Category extends Model
     ];
 
     /**
+     * Возвращяет родительские категории.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    /**
      * Категория может иметь дочернии категории.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function category()
+    public function subcategory()
     {
-        return $this->hasMany(self::class);
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    /**
+     * Рекурсивно возвращяет дерево дочерние категории.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function recursiveSubcategory()
+    {
+        return $this->subcategory()->with('recursiveSubcategory');
     }
 
     /**

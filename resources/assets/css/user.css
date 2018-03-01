@@ -1,0 +1,34 @@
+.wrapper {
+    display: flex;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100vh;
+}
+
+#content {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 0 10px;
+}
+
+.sidebar-header > h3 {
+    margin-top: 13px;
+}
+
+.collapse > .list-group-item, .collapsing > .list-group-item {
+    padding: 6px 30px;
+}
+
+.container-form {
+    padding: 0 50px;
+}
