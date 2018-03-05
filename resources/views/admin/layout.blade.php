@@ -37,7 +37,7 @@
         </div>
     </nav>
 
-    <div id="content">
+    <div id="content-wrapper">
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <ul class="nav navbar-nav navbar-right">

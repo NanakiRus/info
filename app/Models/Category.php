@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
+    protected $primaryKey = 'slug';
+
+    protected $keyType = 'string';
+
     protected $table = 'categories';
 
     protected  $fillable = [
@@ -64,5 +68,12 @@ class Category extends Model
     public function products()
     {
         return $this->hasMany(Product::class, 'category_id', 'id');
+    }
+
+    public static function getAllCategories($delimiter)
+    {
+        $categories = Category::with('recursiveSubcategory')->whereNull('parent_id')->get();
+
+        return explode(' ', trim(nestedToString($categories, $delimiter)));
     }
 }

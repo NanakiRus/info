@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -14,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(10);
+        $categories = Category::paginate(8);
 
         return view('admin/category/index', [
             'categories' => $categories
@@ -28,9 +29,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::with('recursiveSubcategory')->whereNull('parent_id')->get();
-
-        $categories = explode(' ', trim(nestedToString($categories, '-')));
+        $categories = Category::getAllCategories('-');
 
         return view('/admin/category/create', [
             'categories' => $categories
@@ -46,18 +45,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $input = $request->validate([
-            'title' => 'alpha_dash|max:100',
-            'name' => 'required|alpha_dash|max:100',
+            'title' => 'max:100',
+            'name' => 'required|max:100',
             'slug' => 'required|alpha_dash|max:255|unique:categories',
             'text' => '',
             'parent_id' => ''
         ]);
 
-        if (!empty($input['parent_id'])) {
-            $input['parent_id'] = Category::where('name', str_replace('-', '', $input['parent_id']))
-                ->firstOrFail()
-                ->id;
-        }
+        $input['parent_id'] = $this->fillParentId($input);
 
         Category::create($input);
 
@@ -72,7 +67,9 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        return view('admin/category/show', [
+            'category' => $category
+        ]);
     }
 
     /**
@@ -83,7 +80,12 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        $categories = Category::getAllCategories('-');
+
+        return view('/admin/category/edit', [
+            'category' => $category,
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -95,17 +97,48 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $input = $request->validate([
+            'title' => 'max:100',
+            'name' => 'required|max:100',
+            'slug' => [
+                'required',
+                'alpha_dash',
+                'max:255',
+                Rule::unique('categories')->ignore($category->slug, 'slug'),
+            ],
+            'text' => '',
+            'parent_id' => ''
+        ]);
+
+        $input['parent_id'] = $this->fillParentId($input);
+
+        $category->update($input);
+
+        return back()->with('success', 'Обновлено');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
+     * @param Category $category
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return back();
+    }
+
+    private function fillParentId($input)
+    {
+        if (!empty($input['parent_id'])) {
+            $input['parent_id'] = Category::where('name', str_replace('-', '', $input['parent_id']))
+                ->firstOrFail()
+                ->id;
+        }
+
+        return $input['parent_id'];
     }
 }
